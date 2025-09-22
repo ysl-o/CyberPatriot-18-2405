@@ -68,3 +68,6 @@ for USERNAME in "${users[@]}"; do
     usermod --password "$password" "$USERNAME"
     echo "User ${USERNAME} has new password \"${password}\""
 done
+
+echo ""
+echo "All done!"
