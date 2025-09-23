@@ -8,7 +8,7 @@ mapfile -t all_admins < "$2"
 if ! printf '%s\n' "${all_admins[@]}" | grep -qFx -- "root"; then
     all_admins+=("root")
 fi
-all_users+="${all_admins[@]}"
+all_users+=("${all_admins[@]}")
 
 echo "Before you begin, confirm your inputs are correctly formatted."
 echo "Both files are text files containing usernames delimited by new lines. Ensure you have no extraneous spaces, newlines, etc."
@@ -44,7 +44,7 @@ echo ""
 echo "Adding nonexistent accounts..."
 for USERNAME in "${all_users[@]}"; do
     if ! id "$USERNAME" >/dev/null 2>&1; then
-        sudo adduser "$USERNAME"
+        sudo adduser -y --disabled-password --gecos "" "$USERNAME"
         echo " - Added user ${USERNAME}"
     fi
 done
