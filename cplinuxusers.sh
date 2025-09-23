@@ -1,15 +1,14 @@
 #!/bin/bash
 
-sudo
-
 declare -a all_users=()
 declare -a all_admins=()
 
-all_users=$(cat "$1" | xargs echo | tr ' ' '\n' | sed -e 's/\(.*\)/"\1"/' | tr '\n' ',')
-all_users="[$(echo ${all_users::-1})]"
-
-all_admins=$(cat "$2" | xargs echo | tr ' ' '\n' | sed -e 's/\(.*\)/"\1"/' | tr '\n' ',')
-all_admins="[$(echo ${all_admins::-1})]"
+mapfile -t all_users < "$1"
+mapfile -t all_admins < "$2"
+if ! printf '%s\n' "${all_admins[@]}" | grep -qFx -- "root"; then
+    all_admins+=("root")
+fi
+all_users+="${all_admins[@]}"
 
 echo "Before you begin, confirm your inputs are correctly formatted."
 echo "Both files are text files containing usernames delimited by new lines. Ensure you have no extraneous spaces, newlines, etc."
@@ -17,9 +16,25 @@ echo "Your first input should be the path of the text file containing the userna
 echo "Your second input should be the path of the text file containing the usernames of all intended admins."
 echo ""
 echo "The program will now add, delete, and change the passwords of users accordingly."
-echo "Confirm for a final time that everything is correct. [Y/anything else]"
+echo "-------"
+output=""
+for element in "${all_users[@]}"; do
+    output+="${element}, "
+done
+echo "List of all users, regardless of privilege:"
+echo "${output%, }"
+echo ""
+output = ""
+for element in "${all_admins[@]}"; do
+    output+="${element}, "
+done
+echo "List of all admins (sudoers):"
+echo "${output%, }"
+echo "-------"
+echo "Confirm for a final time that everything is correct."
+echo "[Y/anything else]"
 read confirm
-if [["$confirm" == "Y"]]; then
+if [[ "$confirm" == "Y" ]]; then
     echo "Executing commands..."
 else
     exit
@@ -65,7 +80,7 @@ echo ""
 echo "Changing passwords for each account..."
 for USERNAME in "${users[@]}"; do
     declare password=$(tr -dc 'A-Za-z0-9!?%=' < /dev/urandom | head -c 12)
-    usermod --password "$password" "$USERNAME"
+    sudo usermod --password "$password" "$USERNAME"
     echo "User ${USERNAME} has new password \"${password}\""
 done
 
