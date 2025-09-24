@@ -5,9 +5,6 @@ declare -a all_admins=()
 
 mapfile -t all_users < "$1"
 mapfile -t all_admins < "$2"
-if ! printf '%s\n' "${all_admins[@]}" | grep -qFx -- "root"; then
-    all_admins+=("root")
-fi
 all_users+=("${all_admins[@]}")
 
 echo "Before you begin, confirm your inputs are correctly formatted."
@@ -44,7 +41,7 @@ echo ""
 echo "Adding nonexistent accounts..."
 for USERNAME in "${all_users[@]}"; do
     if ! id "$USERNAME" >/dev/null 2>&1; then
-        sudo adduser -y --disabled-password --gecos "" "$USERNAME"
+        sudo adduser --disabled-password --gecos "" "$USERNAME"
         echo " - Added user ${USERNAME}"
     fi
 done
@@ -90,9 +87,11 @@ done
 echo ""
 echo "Changing passwords for each account..."
 for USERNAME in "${all_users[@]}"; do
-    declare password=$(tr -dc 'A-Za-z0-9!?%=' < /dev/urandom | head -c 12)
-    sudo usermod --password "$password" "$USERNAME"
-    echo "User ${USERNAME} has new password \"${password}\""
+    if [[ "$USERNAME" != "$USER" ]]; then
+	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
+	    sudo usermod --password "$password" "$USERNAME"
+        echo "User ${USERNAME} has new password \"${password}\""
+    fi
 done
 
 echo ""
