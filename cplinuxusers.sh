@@ -24,7 +24,7 @@ done
 echo "List of all users, regardless of privilege:"
 echo "${output%, }"
 echo ""
-output = ""
+output=""
 for element in "${all_admins[@]}"; do
     output+="${element}, "
 done
@@ -51,8 +51,14 @@ done
 
 echo ""
 echo "Removing extraneous accounts..."
-IFS=$'\n' read -r -d '' -a users < <(getent passwd | cut -d: -f1)
-for USERNAME in "${users[@]}"; do
+declare -a reg_users=()
+while IFS=: read -r username _ uid _ _ _ _; do
+    if (( uid >= 1000 )); then
+    	reg_users+=("$username")
+    fi
+done < /etc/passwd
+
+for USERNAME in "${reg_users[@]}"; do
     if [[ ! " ${all_users[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]]; then
         sudo deluser --remove-home "$USERNAME"
         echo " - Deleted user ${USERNAME}"
@@ -68,8 +74,13 @@ done
 
 echo ""
 echo "Removing administrator privileges from extraneous user accounts..."
-IFS=$'\n' read -r -d '' -a admins < <(getent group sudo | cut -d: -f4)
-for USERNAME in "${admins[@]}"; do
+reg_admins=()
+for user in $reg_users; do
+    if id -Gn "$user" | grep -qE '\b(sudo|wheel)\b'; then
+    	reg_admins+=("$user")
+    fi
+done
+for USERNAME in "${reg_admins[@]}"; do
     if [[ ! " ${admins[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]]; then
         sudo deluser -d "$USERNAME" sudo
         echo " - Removed admin from ${USERNAME}"
