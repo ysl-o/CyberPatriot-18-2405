@@ -50,7 +50,7 @@ echo ""
 echo "Removing extraneous accounts..."
 declare -a reg_users=()
 while IFS=: read -r username _ uid _ _ _ _; do
-    if (( uid >= 1000 && uid < 65534)); then
+    if (( uid >= 1000 && uid < 65534 )); then
     	reg_users+=("$username")
     fi
 done < /etc/passwd
