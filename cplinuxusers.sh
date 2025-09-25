@@ -56,7 +56,7 @@ while IFS=: read -r username _ uid _ _ _ _; do
 done < /etc/passwd
 
 for USERNAME in "${reg_users[@]}"; do
-    if [[ ! " ${all_users[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]]; then
+    if [[ ! " ${all_users[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" =~ "$USER" ]]; then
         sudo deluser --remove-home "$USERNAME"
         echo " - Deleted user ${USERNAME}"
     fi
@@ -65,8 +65,10 @@ done
 echo ""
 echo "Adding administrator privileges to administrator accounts..."
 for USERNAME in "${all_admins[@]}"; do
-    sudo usermod -aG sudo "$USERNAME"
-    echo " - Gave admin to ${USERNAME}"
+	if [[ "$USERNAME" =~ "$USER" ]]; then
+    	sudo usermod -aG sudo "$USERNAME"
+    	echo " - Gave admin to ${USERNAME}"
+	fi
 done
 
 echo ""
@@ -78,7 +80,7 @@ for user in $reg_users; do
     fi
 done
 for USERNAME in "${reg_admins[@]}"; do
-    if [[ ! " ${admins[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]]; then
+    if [[ ! " ${admins[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" =~ "$USER" ]]; then
         sudo deluser -d "$USERNAME" sudo
         echo " - Removed admin from ${USERNAME}"
     fi
@@ -87,7 +89,7 @@ done
 echo ""
 echo "Changing passwords for each account..."
 for USERNAME in "${all_users[@]}"; do
-    if [[ "$USERNAME" != "$USER" ]]; then
+    if [[ "$USERNAME" =~ "$USER" ]]; then
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
