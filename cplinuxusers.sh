@@ -41,7 +41,7 @@ echo ""
 echo "Adding nonexistent accounts..."
 for USERNAME in "${all_users[@]}"; do
     if ! id "$USERNAME" >/dev/null 2>&1; then
-        sudo adduser --disabled-password --gecos "" "$USERNAME"
+        sudo adduser --disabled-password --gid users --gecos "" "$USERNAME"
         echo " - Added user ${USERNAME}"
     fi
 done
