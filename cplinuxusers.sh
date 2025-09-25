@@ -3,6 +3,8 @@
 declare -a all_users=()
 declare -a all_admins=()
 
+USERS_ID=$(getent group "users" | cut -d: -f3)
+
 mapfile -t all_users < "$1"
 mapfile -t all_admins < "$2"
 all_users+=("${all_admins[@]}")
