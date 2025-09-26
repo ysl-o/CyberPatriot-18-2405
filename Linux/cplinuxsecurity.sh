@@ -1,3 +1,6 @@
+#!/bin/bash
+# DO NOT USE - NOT FINISHED AND DEBUGGED
+
 mapfile -t NECESSARY_PROGRAMS < "$1"
 RELEVANT_LINE=0
 
