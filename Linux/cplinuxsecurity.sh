@@ -16,8 +16,8 @@ echo "Changed root password to ${ROOT_PASSWORD}"
 echo "Disabled logging in to root account"
 echo ""
 
-sudo apt update && sudo apt full-upgrade && sudo apt install ufw
-sudo apt-get dist-upgrade
+sudo apt update && sudo apt full-upgrade && sudo apt-get update && sudo apt-get dist-upgrade
+sudo apt install ufw
 sudo ufw disable
 sudo ufw enable
 
@@ -112,9 +112,8 @@ echo "----"
 
 # Run last; may not work
 echo "Running Clam antivirus..."
-sudo apt-get update
-apt-get install clamav
-freshclam
-clamscan -i -r --remove=yes /
+sudo apt-get install clamav
+sudo freshclam
+sudo clamscan -i -r --remove=yes /
 
 sudo reboot
