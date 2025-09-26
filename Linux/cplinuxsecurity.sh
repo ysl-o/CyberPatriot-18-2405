@@ -25,15 +25,15 @@ sed -i 's,net.ipv4.tcp_syncookies = 0,net.ipv4.tcp_syncookies = 1,g' "$SYSCTL_CO
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
-grep -n -m 1 "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
-sed -i '${RELEVANT_LINE}c,PASS_MAX_DAYS_LINE\t30' "$PASS_POLICY_FILE"
-sed -i '$((RELEVANT_LINE + 1))c,PASS_MIN_DAYS_LINE\t1' "$PASS_POLICY_FILE"
-sed -i '$((RELEVANT_LINE + 2))c,PASS_WARN_AGE\t10' "$PASS_POLICY_FILE"
+grep -n -m 1 "PASS_MAX_DAYS\t" "$PASS_POLICY_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
+sed -i '${RELEVANT_LINE}c,.*,PASS_MAX_DAYS_LINE\t30' "$PASS_POLICY_FILE"
+sed -i '$((RELEVANT_LINE + 1))s,.*,PASS_MIN_DAYS_LINE\t1' "$PASS_POLICY_FILE"
+sed -i '$((RELEVANT_LINE + 2))s,.*,PASS_WARN_AGE\t10' "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 echo ""
 
 grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
-sed -i '${RELEVANT_LINE}c,PermitRootLogin no' "$SSH_PERM_FILE"
+sed -i '${RELEVANT_LINE}s,.*,PermitRootLogin no' "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 echo ""
 
@@ -43,11 +43,11 @@ echo "Removed having an automatic login user; not the user itself"
 echo ""
 
 grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -f: '{$RELEVANT_LINE=$1}'
-sed -i '${RELEVANT_LINE}c,allow_guest=false' "$AUTO_LOGIN"
+sed -i '${RELEVANT_LINE}s,.*,allow_guest=false' "$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 echo ""
 
-sed -i '1c,APT::Periodic::Update-Package-Lists' | awk -f: "$PERIODIC"
+sed -i '1s,.*,APT::Periodic::Update-Package-Lists' | awk -f: "$PERIODIC"
 echo "Set automatic package updating"
 echo ""
 
