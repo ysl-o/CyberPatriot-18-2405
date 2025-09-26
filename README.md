@@ -15,15 +15,15 @@
   <ul>
     <li>Ubuntu 22</li>
     <ul>
-      <li><a href="cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
     </ul>
     <li>Ubuntu 24</li>
     <ul>
-      <li><a href="cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
     </ul>
     <li>Mint 21</li>
     <ul>
-      <li><a href="cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
     </ul>
   </ul>
 </ul>
@@ -31,7 +31,7 @@
 <h2>Guide by File</h2>
 <p>Each program file in the repository (meaning excluding this one and PDFs/pictures) is documented below by alphanumeric order.</p>
 
-<h3><a href="cplinuxusers.sh">cplinuxusers.sh</a></h3>
+<h3><a href="Linux/cplinuxusers.sh">cplinuxusers.sh</a></h3>
 <p><i>Works for: Ubuntu 22, Ubuntu 24, Mint 21</i></p>
 <br>
 <p>This file is a Shell script which automates the creation, removal, privilege allocation, and password usage of a list of users and administrators. This is useful for the section of the competition where accounts are listed in the README. To use the script, follow the instructions below:</p>
