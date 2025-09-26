@@ -10,7 +10,7 @@ PAM_COMMON_PASS=/etc/apt/apt.conf.d/10periodic
 AUTO_LOGIN=/etc/lightdm/lightdm.conf
 
 ROOT_PASSWORD=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 15)
-sudo sh -c 'echo root:${ROOT_PASSWORD} | chpasswd'
+sudo usermod --password "$ROOT_PASSWORD" root
 sudo passwd -l root
 echo "Changed root password to ${ROOT_PASSWORD}"
 echo "Disabled logging in to root account"
@@ -82,7 +82,7 @@ HACKS=("dnsrecon" "dnsenum" "proxychains" "tor" "nmap" "slowloris" "zphisher" "n
 for HACK in "${HACKS[@]}"; do
     if ! [[ " ${NECESSARY_PROGRAMS[*]} " =~ " ${HACK} " ]]; then
         HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
-        while ! [ -z "$HACK" ]; then
+        while ! [ -z "$HACK" ]; do
             sudo apt-get purge "$HACK"
             echo " - Removed suspicious program {$HACK}"
             HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
