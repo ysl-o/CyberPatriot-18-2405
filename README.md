@@ -40,14 +40,14 @@
   <li>Create a new text file while in the same directory as the downloaded Shell file with the following command if you're using the terminal or by making a blank text file if you're using the GUI:
   
   ```shell
-  sudo nano touch users.txt
+  sudo nano users.txt
   ```
   </li>
   <li>Create or copy a list containing all <i>non-privileged</i> users you want in the user group, separated by a newline, with no additional spaces, marks, or symbols.</li>
   <li>Create a second text file while in the same directory using the terminal (below) or GUI:
   
   ```shell
-  sudo nano touch admins.txt
+  sudo nano admins.txt
   ```
   </li>
   <li>Create or copy a list containing all <i>privileged administrators</i>, separated by a newline, with no additional spaces, marks, or symbols.</li>
