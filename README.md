@@ -7,13 +7,13 @@
   <li>Windows</li>
   <ul>
     <li>Windows 10</li>
-      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
+      <ul><li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li></ul>
     <li>Windows 11</li>
-      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
+      <ul><li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li></ul>
     <li>Windows Server 2019</li>
-      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
+      <ul><li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li></ul>
     <li>Windows Server 2022</li>
-      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
+      <ul><li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li></ul>
   </ul>
   <li>Linux</li>
   <ul>
