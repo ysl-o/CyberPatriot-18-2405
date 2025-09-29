@@ -7,9 +7,13 @@
   <li>Windows</li>
   <ul>
     <li>Windows 10</li>
+      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
     <li>Windows 11</li>
+      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
     <li>Windows Server 2019</li>
+      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
     <li>Windows Server 2022</li>
+      <li><a href="Windows/script.ps1">Security Hardening & Account Enforcement</a></li>
   </ul>
   <li>Linux</li>
   <ul>
@@ -60,3 +64,27 @@
   </li>
 </ol>
 <p><b>Note:</b> Do not be afraid that the program will erase the current or root user; I specifically programmed it not to do that. Also, if you need to refer to it again, write down the passwords it spits out for each account. If you forget, you can probably either look it up in the system anyway or run the program again, which will randomize and print the passwords to you again without making any changes to the user structure.</p>
+
+<h3><a href="Windows/script.ps1">script.ps1</a></h3>
+<p><i>Works for: Windows 10, Windows 11, Windows Server 2019, Windows Server 2022</i></p>
+<br>
+<p>This file is a PowerShell script with nearly all the available security features in a single automation. In the later stages of the competition, it may earn around 27 points when run immediately. Unlike the Linux script, this one does not require the creation of additional text files. To use the script, follow the instructions below:</p>
+<ol>
+  <li>Place on the local Desktop as "script.ps1".</li>
+  <li>Create folder on desktop as “accounts.txt”.</li>
+	<li>Paste desired account names into “accounts.txt”.</li>
+  <li>Open elevated PowerShell--this can be done with Windows+R, type “powershell” and then Ctrl+Shift+Enter.</li>
+  <li>Type these commands:
+  
+  ```powershell
+  > Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+  > cd "C:\Users\ACCOUNTNAME\Desktop"
+  > $AdminPW = ConvertTo-SecureString 'Aa1!aaaaaaaaaa' -AsPlainText -Force
+  > .\script.ps1 `
+  > SpecPath .\accounts.txt `
+  > AdminPasswordSecure $AdminPW `
+  > DeleteUnlisted `
+  > ReportPath .\full_apply.html
+  ```
+  </li>
+</ol>
