@@ -53,7 +53,7 @@ sudo sed -i \
 "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 
-grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
+RELEVANT_LINE=$(grep -n "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: 'NR==1 {print $1}')
 sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 
