@@ -19,8 +19,8 @@ echo "Changed root password to ${ROOT_PASSWORD}"
 echo "Disabled logging in to root account"
 echo ""
 
-sudo apt update && sudo apt full-upgrade && sudo apt-get update && sudo apt-get dist-upgrade
-sudo apt install ufw
+sudo apt update -y && sudo apt full-upgrade -y && sudo apt-get update -y && sudo apt-get dist-upgrade -y
+sudo apt install ufw -y
 sudo ufw disable
 sudo ufw enable
 
