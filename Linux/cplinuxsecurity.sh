@@ -56,12 +56,15 @@ echo "Removed having an automatic login user; not the user itself"
 echo ""
 
 grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
-sudo sed -i -e "${RELEVANT_LINE}c\\allow_guest=false" "$AUTO_LOGIN"
+sudo sed -i \
+-e "${RELEVANT_LINE}c\\allow_guest=false" \
+-e '$a\allow_guest=false\' \
+"$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 echo ""
 
 sudo touch "$PERIODIC"
-sudo sed -i '$a\APT::Periodic::Update-Package-Lists\ "1"' "$PERIODIC"
+sudo sed -i '$a\APT::Periodic::Update-Package-Lists "1"\' "$PERIODIC"
 echo "Set automatic package updating"
 echo ""
 
