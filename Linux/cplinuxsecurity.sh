@@ -112,8 +112,8 @@ echo ""
 echo "----"
 echo ""
 echo "Updating systemd..."
-sudo apt-get install build-essential devscripts
-sudo apt-get build-dep systemd
+sudo apt-get install build-essential devscripts -y
+sudo apt-get build-dep systemd -y
 mkdir systemd
 cd systemd/
 wget http://www.freedesktop.org/software/systemd/systemd-220.tar.xz
@@ -134,7 +134,7 @@ echo ""
 echo "----"
 echo ""
 echo "Running Clam antivirus..."
-sudo apt-get install clamav
+sudo apt-get install clamav -y
 sudo freshclam
 sudo clamscan -i -r --remove=yes /
 
