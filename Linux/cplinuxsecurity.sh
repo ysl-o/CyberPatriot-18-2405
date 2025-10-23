@@ -29,9 +29,9 @@ echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
 grep -n -m 1 "PASS_MAX_DAYS\t" "$PASS_POLICY_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
-sed -i '${RELEVANT_LINE}c,.*,PASS_MAX_DAYS_LINE\t30' "$PASS_POLICY_FILE"
-sed -i '$((RELEVANT_LINE + 1))s,.*,PASS_MIN_DAYS_LINE\t1' "$PASS_POLICY_FILE"
-sed -i '$((RELEVANT_LINE + 2))s,.*,PASS_WARN_AGE\t10' "$PASS_POLICY_FILE"
+sed -i '${RELEVANT_LINE}c,.*,PASS_MAX_DAYS_LINE 30' "$PASS_POLICY_FILE"
+sed -i '$((RELEVANT_LINE + 1))s,.*,PASS_MIN_DAYS_LINE 1' "$PASS_POLICY_FILE"
+sed -i '$((RELEVANT_LINE + 2))s,.*,PASS_WARN_AGE 10' "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 echo ""
 
@@ -73,10 +73,9 @@ for FILE_EXTENSION in "${MEDIA_FILES[@]}"; do
     unset IFS
 
     for FILE in "${FOUND_FILES[@]}"; do
+        echo " - Removed {$FILE}"
         rm -f "$FILE"
     done
-
-    echo " - Removed {$FILE}"
 done
 
 echo "----"
@@ -119,4 +118,5 @@ sudo apt-get install clamav
 sudo freshclam
 sudo clamscan -i -r --remove=yes /
 
-sudo reboot
+echo "----"
+echo "It is highly recommended that you reboot at this point."
