@@ -56,6 +56,8 @@ echo "Modified password time policy"
 RELEVANT_LINE=$(grep -n "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: 'NR==1 {print $1}')
 sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
+# ! DEBUG !
+sudo nano "$SSH_PERM_FILE"
 
 grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
 sudo sed -i \
@@ -63,10 +65,12 @@ sudo sed -i \
 -e '$a\allow_guest=false' \
 "$AUTO_LOGIN"
 echo "Removed automatic login and guest account"
+sudo nano "$AUTO_LOGIN"
 
 sudo touch "$PERIODIC"
 sudo sed -i '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
 echo "Set automatic package updating"
+sudo nano "$PERIODIC"
 
 grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}s,$, remember=5," "$PAM_COMMON_PASS"
@@ -75,6 +79,7 @@ echo "Set to remember last 10 user passwords"
 grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sudo sed -i -e "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1," "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
+sudo nano "$PAM_COMMON_PASS"
 
 echo ""
 echo "----"
