@@ -16,12 +16,11 @@ RELEVANT_LINE=0
 SYSCTL_CONFIG="/etc/sysctl.conf"
 PASS_POLICY_FILE="/etc/login.defs"
 SSH_PERM_FILE="/etc/ssh/sshd_config"
-PAM_COMMON_PASS="/etc/pam.d/common-password"
-PERIODIC="/etc/apt/apt.conf.d/10periodic"
+PAM_COMMON_PASS="/etc/pam.d/common-password" # Not working
+PERIODIC="/etc/apt/apt.conf.d/10periodic" # Not working
 
 # UBUNTU-BASED (EX. MINT) ONLY
-AUTO_LOGIN="/etc/lightdm/lightdm.conf"
-[ ! -f "$AUTO_LOGIN" ] || sudo touch "$AUTO_LOGIN"
+AUTO_LOGIN="/etc/lightdm/lightdm.conf" # Not working
 
 alias sed='sed -E'
 source ~/.bashrc
@@ -56,21 +55,20 @@ echo "Modified password time policy"
 RELEVANT_LINE=$(grep -n "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: 'NR==1 {print $1}')
 sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
-# ! DEBUG !
-sudo nano "$SSH_PERM_FILE"
 
-grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
+sudo nano "$AUTO_LOGIN" # ! DEBUG !
+RELEVANT_LINE=$(grep -n "autologin-user" "$AUTO_LOGIN" | awk -F: 'NR==2 {print $1}')
 sudo sed -i \
 -e "${RELEVANT_LINE}d" \
 -e '$a\allow_guest=false' \
 "$AUTO_LOGIN"
 echo "Removed automatic login and guest account"
-sudo nano "$AUTO_LOGIN"
+sudo nano "$AUTO_LOGIN" # ! DEBUG !
 
 sudo touch "$PERIODIC"
 sudo sed -i '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
 echo "Set automatic package updating"
-sudo nano "$PERIODIC"
+sudo nano "$PERIODIC" # ! DEBUG !
 
 grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}s,$, remember=5," "$PAM_COMMON_PASS"
@@ -79,7 +77,7 @@ echo "Set to remember last 10 user passwords"
 grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sudo sed -i -e "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1," "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
-sudo nano "$PAM_COMMON_PASS"
+sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 
 echo ""
 echo "----"
