@@ -37,17 +37,17 @@ echo "Modified password time policy"
 echo ""
 
 grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
-sed -i "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
+sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 echo ""
 
 grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -f: '{$RELEVANT_LINE=$1}'
-sed -i "${RELEVANT_LINE}d" "$AUTO_LOGIN"
+sed -i -e "${RELEVANT_LINE}d" "$AUTO_LOGIN"
 echo "Removed having an automatic login user; not the user itself"
 echo ""
 
 grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -f: '{$RELEVANT_LINE=$1}'
-sed -i "${RELEVANT_LINE}c\\allow_guest=false" "$AUTO_LOGIN"
+sed -i -e "${RELEVANT_LINE}c\\allow_guest=false" "$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 echo ""
 
@@ -56,12 +56,12 @@ echo "Set automatic package updating"
 echo ""
 
 grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -f: '{$RELEVANT_LINE=$1}'
-sed -i "${RELEVANT_LINE}s,$, remember=5" "$PAM_COMMON_PASS"
+sed -i -e "${RELEVANT_LINE}s,$, remember=5" "$PAM_COMMON_PASS"
 echo "Set to remember last 10 user passwords"
 echo ""
 
 grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -f: '{$RELEVANT_LINE=$1}'
-sed -i "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1" "$PAM_COMMON_PASS"
+sed -i -e "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1" "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
 echo ""
 
