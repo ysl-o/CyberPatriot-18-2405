@@ -12,6 +12,9 @@ PAM_COMMON_PASS=/etc/apt/apt.conf.d/10periodic
 # UBUNTU ONLY
 AUTO_LOGIN=/etc/lightdm/lightdm.conf
 
+alias sed='sed -E'
+source ~/.bashrc
+
 ROOT_PASSWORD=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 15)
 sudo usermod --password "$ROOT_PASSWORD" root
 sudo passwd -l root
@@ -24,11 +27,11 @@ sudo apt install ufw -y
 sudo ufw disable
 sudo ufw enable
 
-sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e 's/.*net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter=1/' -e 's/.*net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter=1/' -e 's/.*net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects=1/' -e 's/.*net.ipv6.conf.all.accept_redirects.*/net.ipv6.conf.all.accept_redirects=0/' -e 's/.*net.ipv4.conf.all.send_redirects.*/net.ipv4.conf.all.send_redirects=0/' -e 's/.*net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route=0/' -e 's/.*net.ipv6.conf.all.accept_source_route.*/net.ipv6.conf.all.accept_source_route=0/' -e 's/.*net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians=1/' -e 's/.*kernel.sysrq.*/kernel.sysrq=0' "$SYSCTL_CONFIG"
+sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e 's/.*net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter=1/' -e 's/.*net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter=1/' -e 's/.*net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects=1/' -e 's/.*net.ipv6.conf.all.accept_redirects.*/net.ipv6.conf.all.accept_redirects=0/' -e 's/.*net.ipv4.conf.all.send_redirects.*/net.ipv4.conf.all.send_redirects=0/' -e 's/.*net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route=0/' -e 's/.*net.ipv6.conf.all.accept_source_route.*/net.ipv6.conf.all.accept_source_route=0/' -e 's/.*net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians=1/' -e 's/.*kernel.sysrq.*/kernel.sysrq=0/' "$SYSCTL_CONFIG"
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
-grep -n -m 1 "PASS_MAX_DAYS\t" "$PASS_POLICY_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
+RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: 'NR==2 {print $1}')
 sed -i '${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30' "$PASS_POLICY_FILE"
 sed -i '$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS_LINE 1' "$PASS_POLICY_FILE"
 sed -i '$((RELEVANT_LINE + 2))c\\PASS_WARN_AGE 10' "$PASS_POLICY_FILE"
