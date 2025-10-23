@@ -10,8 +10,12 @@ PASS_POLICY_FILE="/etc/login.defs"
 SSH_PERM_FILE="/etc/ssh/sshd_config"
 [ ! -f "$SSH_PERM_FILE" ] || sudo touch "$SSH_PERM_FILE"
 
-PAM_COMMON_PASS="/etc/apt/apt.conf.d/10periodic"
+sudo apt-get install libpam-cracklib -y
+PAM_COMMON_PASS="/etc/pam.d/common-password"
 [ ! -f "$PAM_COMMON_PASS" ] || sudo touch "$PAM_COMMON_PASS"
+
+PERIODIC="/etc/apt/apt.conf.d/10periodic"
+[ ! -f "$PERIODIC" ] || sudo touch "$PERIODIC"
 
 # UBUNTU-BASED (EX. MINT) ONLY
 AUTO_LOGIN="/etc/lightdm/lightdm.conf"
@@ -60,7 +64,7 @@ sed -i -e "${RELEVANT_LINE}c\\allow_guest=false" "$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 echo ""
 
-sed -i '1s\APT::Periodic::Update-Package-Lists\' | awk -F: '$PERIODIC'
+sed -i '$a\APT::Periodic::Update-Package-Lists\ "1"' "$PERIODIC"
 echo "Set automatic package updating"
 echo ""
 
