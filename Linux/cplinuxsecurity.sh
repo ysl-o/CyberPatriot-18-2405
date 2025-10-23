@@ -32,7 +32,7 @@ echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
 RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: 'NR==2 {print $1}')
-sudo sed -i "${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30" -e "$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS_LINE 1" -e "$((RELEVANT_LINE + 2))c\\PASS_WARN_AGE 10" "$PASS_POLICY_FILE"
+sudo sed -i -e "${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30" -e "$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS_LINE 1" -e "$((RELEVANT_LINE + 2))c\\PASS_WARN_AGE 10" "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 echo ""
 
