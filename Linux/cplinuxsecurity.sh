@@ -4,16 +4,18 @@
 mapfile -t NECESSARY_PROGRAMS < "$1"
 RELEVANT_LINE=0
 
-SYSCTL_CONFIG=/etc/sysctl.conf
-PASS_POLICY_FILE=/etc/login.defs
+SYSCTL_CONFIG="/etc/sysctl.conf"
+PASS_POLICY_FILE="/etc/login.defs"
 
-SSH_PERM_FILE=/etc/ssh/sshd_config
+SSH_PERM_FILE="/etc/ssh/sshd_config"
 [ ! -f "$SSH_PERM_FILE" ] || sudo touch "$SSH_PERM_FILE"
 
-PAM_COMMON_PASS=/etc/apt/apt.conf.d/10periodic
+PAM_COMMON_PASS="/etc/apt/apt.conf.d/10periodic"
+[ ! -f "$PAM_COMMON_PASS" ] || sudo touch "$PAM_COMMON_PASS"
 
-# UBUNTU ONLY
-AUTO_LOGIN=/etc/lightdm/lightdm.conf
+# UBUNTU-BASED (EX. MINT) ONLY
+AUTO_LOGIN="/etc/lightdm/lightdm.conf"
+[ ! -f "$AUTO_LOGIN" ] || sudo touch "$AUTO_LOGIN"
 
 alias sed='sed -E'
 source ~/.bashrc
