@@ -24,7 +24,7 @@ sudo apt install ufw -y
 sudo ufw disable
 sudo ufw enable
 
-sudo sed -i 's,net.ipv4.tcp_syncookies = 0,net.ipv4.tcp_syncookies = 1,g' "$SYSCTL_CONFIG"
+sudo sed -i -e 'net.ipv4.tcp_syncookies,c\net.ipv4.tcp_syncookies=1' -e 'net.ipv4.conf.default.rp_filter,c\net.ipv4.conf.default.rp_filter=1' -e 'net.ipv4.conf.all.rp_filter,c\net.ipv4.conf.all.rp_filter=1' -e 'net.ipv4.conf.all.secure_redirects,c\net.ipv4.conf.all.secure_redirects=1' -e 'net.ipv6.conf.all.accept_redirects,c\net.ipv6.conf.all.accept_redirects=0' -e 'net.ipv4.conf.all.send_redirects,c\net.ipv4.conf.all.send_redirects=0' -e 'net.ipv4.conf.all.accept_source_route,c\net.ipv4.conf.all.accept_source_route=0' -e 'net.ipv6.conf.all.accept_source_route,c\net.ipv6.conf.all.accept_source_route=0' -e 'net.ipv4.conf.all.log_martians,c\net.ipv4.conf.all.log_martians=1' -e 'kernel.sysrq,c\kernel.sysrq=0' "$SYSCTL_CONFIG"
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
