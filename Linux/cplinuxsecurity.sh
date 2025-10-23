@@ -15,11 +15,7 @@ RELEVANT_LINE=0
 
 SYSCTL_CONFIG="/etc/sysctl.conf"
 PASS_POLICY_FILE="/etc/login.defs"
-
-sudo 
 SSH_PERM_FILE="/etc/ssh/sshd_config"
-
-sudo apt-get install libpam-cracklib -y
 PAM_COMMON_PASS="/etc/pam.d/common-password"
 PERIODIC="/etc/apt/apt.conf.d/10periodic"
 
@@ -46,6 +42,9 @@ sudo ufw enable
 sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e 's/.*net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter=1/' -e 's/.*net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter=1/' -e 's/.*net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects=1/' -e 's/.*net.ipv6.conf.all.accept_redirects.*/net.ipv6.conf.all.accept_redirects=0/' -e 's/.*net.ipv4.conf.all.send_redirects.*/net.ipv4.conf.all.send_redirects=0/' -e 's/.*net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route=0/' -e 's/.*net.ipv6.conf.all.accept_source_route.*/net.ipv6.conf.all.accept_source_route=0/' -e 's/.*net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians=1/' -e 's/.*kernel.sysrq.*/kernel.sysrq=0/' "$SYSCTL_CONFIG"
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 
+echo ""
+echo "----"
+echo ""
 RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: 'NR==2 {print $1}')
 sudo sed -i \
 -e "${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30" \
@@ -54,19 +53,21 @@ sudo sed -i \
 "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 
-sudo touch "$SSH_PERM_FILE"
 grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
 sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 
 grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
-sudo sed -i -e "${RELEVANT_LINE}d" "$AUTO_LOGIN"
+sudo sed -i \
+-e "${RELEVANT_LINE}d" \
+-e '$a\allow_guest=false' \
+"$AUTO_LOGIN"
 echo "Removed having an automatic login user; not the user itself"
 
 grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
 sudo sed -i \
 -e "${RELEVANT_LINE}c\\allow_guest=false" \
--e '$a\allow_guest=false\' \
+-e '$a\allow_guest=false' \
 "$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 
@@ -107,7 +108,7 @@ for HACK in "${HACKS[@]}"; do
     if ! [[ " ${NECESSARY_PROGRAMS[*]} " =~ " ${HACK} " ]]; then
         HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
         while ! [ -z "$HACK" ]; do
-            sudo apt-get purge "$HACK"
+            sudo apt-get purge "$HACK" -y
             echo " - Removed suspicious program {$HACK}"
             HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
         done
