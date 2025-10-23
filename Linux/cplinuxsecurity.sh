@@ -34,36 +34,36 @@ sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e 's/
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 echo ""
 
-RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: "NR==2 {print $1}")
+RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: 'NR==2 {print $1}')
 sudo sed -i -e "${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30" -e "$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS_LINE 1" -e "$((RELEVANT_LINE + 2))c\\PASS_WARN_AGE 10" "$PASS_POLICY_FILE"
 echo "Modified password time policy"
 echo ""
 
-grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: "{$RELEVANT_LINE=$1}"
+grep -n -m 1 "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 echo ""
 
-grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -F: "{$RELEVANT_LINE=$1}"
+grep -n -m 1 "autologin-user" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}d" "$AUTO_LOGIN"
 echo "Removed having an automatic login user; not the user itself"
 echo ""
 
-grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -F: "{$RELEVANT_LINE=$1}"
+grep -n -m 1 "allow_guest" "$AUTO_LOGIN" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}c\\allow_guest=false" "$AUTO_LOGIN"
 echo "Does not allow a guest account to the computer"
 echo ""
 
-sed -i '1s\APT::Periodic::Update-Package-Lists\' | awk -F: "$PERIODIC"
+sed -i '1s\APT::Periodic::Update-Package-Lists\' | awk -F: '$PERIODIC'
 echo "Set automatic package updating"
 echo ""
 
-grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -F: "{$RELEVANT_LINE=$1}"
+grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}s,$, remember=5" "$PAM_COMMON_PASS"
 echo "Set to remember last 10 user passwords"
 echo ""
 
-grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -F: "{$RELEVANT_LINE=$1}"
+grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
 sed -i -e "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1" "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
 echo ""
