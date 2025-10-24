@@ -1,8 +1,6 @@
 #!/bin/bash
 # DO NOT USE - NOT FINISHED AND DEBUGGED
 
-#!/bin/bash
-
 declare -a all_users=()
 declare -a all_admins=()
 
