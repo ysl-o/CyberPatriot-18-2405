@@ -1,14 +1,122 @@
 #!/bin/bash
 # DO NOT USE - NOT FINISHED AND DEBUGGED
 
+#!/bin/bash
+
+declare -a all_users=()
+declare -a all_admins=()
+
+USERS_ID=$(getent group "users" | cut -d: -f3)
+
+mapfile -t all_users < "$1"
+mapfile -t all_admins < "$2"
+all_users+=("${all_admins[@]}")
+
+echo "Before you begin, confirm your inputs are correctly formatted."
+echo "Both files are text files containing usernames delimited by new lines. Ensure you have no extraneous spaces, newlines, etc."
+echo "Your first input should be the path of the text file containing the usernames of all intended nonprivileged users NOT INCLUDING admins."
+echo "Your second input should be the path of the text file containing the usernames of all intended admins."
+echo ""
+echo "The program will now add, delete, and change the passwords of users accordingly."
+echo "-------"
+output=""
+for element in "${all_users[@]}"; do
+    output+="${element}, "
+done
+echo "List of all users, regardless of privilege:"
+echo "${output%, }"
+echo ""
+output=""
+for element in "${all_admins[@]}"; do
+    output+="${element}, "
+done
+echo "List of all admins (sudoers):"
+echo "${output%, }"
+echo "-------"
+echo "Confirm for a final time that everything is correct."
+echo "[Y/anything else]"
+read confirm
+if [[ "$confirm" == "Y" || "$confirm" == "y" ]]; then
+    echo "Executing commands..."
+else
+    echo "Aborting program."
+    exit
+fi
+
+echo ""
+echo "Adding nonexistent accounts..."
+for USERNAME in "${all_users[@]}"; do
+    if ! id "$USERNAME" >/dev/null 2>&1; then
+        sudo adduser --disabled-password --gid "$USERS_ID" --gecos "" "$USERNAME"
+        echo " - Added user ${USERNAME}"
+    fi
+done
+
+echo ""
+echo "Removing extraneous accounts..."
+declare -a reg_users=()
+while IFS=: read -r username _ uid _ _ _ _; do
+    if (( uid >= 1000 && uid < 65534 )); then
+    	reg_users+=("$username")
+    fi
+done < /etc/passwd
+
+for USERNAME in "${reg_users[@]}"; do
+    if [[ ! " ${all_users[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" != "$USER" ]]; then
+        sudo deluser --remove-home "$USERNAME"
+        echo " - Deleted user ${USERNAME}"
+    fi
+done
+
+echo ""
+echo "Adding administrator privileges to administrator accounts..."
+for USERNAME in "${all_admins[@]}"; do
+	if [[ "$USERNAME" != "$USER" ]]; then
+    	sudo usermod -aG sudo "$USERNAME"
+    	echo " - Gave admin to ${USERNAME}"
+	fi
+done
+
+echo ""
+echo "Removing administrator privileges from extraneous user accounts..."
+reg_admins=()
+for user in $reg_users; do
+    if id -Gn "$user" | grep -qE '\b(sudo|wheel)\b'; then
+    	reg_admins+=("$user")
+    fi
+done
+for USERNAME in "${reg_admins[@]}"; do
+    if [[ ! " ${admins[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" != "$USER" ]]; then
+        sudo deluser -d "$USERNAME" sudo
+        echo " - Removed admin from ${USERNAME}"
+    fi
+done
+
+
+echo ""
+echo "Changing passwords for each account..."
+passfile="passwords.txt"
+touch "$passfile"
+for USERNAME in "${all_users[@]}"; do
+    if [[ "$USERNAME" != "$USER" ]]; then
+	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
+	    sudo usermod --password "$password" "$USERNAME"
+        echo "User ${USERNAME} has new password \"${password}\""
+		sed -i -e "$a\ ${USERNAME} - ${password} " "$passfile"
+    fi
+done
+
+echo ""
+
 echo "Updating packages..."
 sudo apt update -y && sudo apt full-upgrade -y && sudo apt-get update -y && sudo apt-get dist-upgrade -y
 echo ""
 echo "----"
 echo ""
-echo "Installing SSH and libpam-cracklib for file locations..."
+echo "Installing SSH, cracklib, unattended upgrade dependencies for modifications..."
 sudo apt install openssh-server -y
 sudo apt-get install libpam-cracklib -y
+sudo apt install unattended-upgrades -y
 
 mapfile -t NECESSARY_PROGRAMS < "$1"
 RELEVANT_LINE=0
@@ -66,16 +174,14 @@ echo "Removed automatic login and guest account"
 sudo nano "$AUTO_LOGIN" # ! DEBUG !
 
 sudo touch "$PERIODIC"
-sudo sed -i '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
+sudo sed -i -e '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
 echo "Set automatic package updating"
 sudo nano "$PERIODIC" # ! DEBUG !
 
-grep -n -m 1 "pam_unix.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
-sed -i -e "${RELEVANT_LINE}s,$, remember=5," "$PAM_COMMON_PASS"
-echo "Set to remember last 10 user passwords"
-
-grep -n -m 1 "pam_cracklib.so" "$PAM_COMMON_PASS" | awk -F: '{$RELEVANT_LINE=$1}'
-sudo sed -i -e "${RELEVANT_LINE}s,$, minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1," "$PAM_COMMON_PASS"
+sed -i \
+-e "pam_unix.so/s/$/ remember=10/" \
+-e "pam_cracklib.so/s/$/ minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1/" \
+"$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
 sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 
