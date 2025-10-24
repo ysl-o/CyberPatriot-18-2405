@@ -79,7 +79,7 @@ done
 echo ""
 echo "Removing administrator privileges from extraneous user accounts..."
 reg_admins=()
-for user in $reg_users; do
+for user in "${reg_users[@]}"; do
     if id -Gn "$user" | grep -qE '\b(sudo|wheel)\b'; then
     	reg_admins+=("$user")
     fi
@@ -101,7 +101,7 @@ for USERNAME in "${all_users[@]}"; do
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
-		sed -i -e "$a\ ${USERNAME}: ${password} " "$passfile"
+		printf "%s: %s\n" "${USERNAME}" "${password}" >> "$passfile"
     fi
 done
 
