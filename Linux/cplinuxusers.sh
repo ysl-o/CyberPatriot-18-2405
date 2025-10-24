@@ -88,6 +88,8 @@ for USERNAME in "${reg_admins[@]}"; do
     fi
 done
 
+touch passwords.txt
+passfile=passwords.txt
 echo ""
 echo "Changing passwords for each account..."
 for USERNAME in "${all_users[@]}"; do
@@ -95,6 +97,7 @@ for USERNAME in "${all_users[@]}"; do
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
+		sed -i -e "$a\ ${USERNAME} - ${password} " "$passfile"
     fi
 done
 
