@@ -6,6 +6,7 @@
 declare -a all_users=()
 declare -a all_admins=()
 
+USER=$(whoami)
 USERS_ID=$(getent group "users" | cut -d: -f3)
 
 mapfile -t all_users < "$1"
@@ -102,7 +103,7 @@ for USERNAME in "${all_users[@]}"; do
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
-		sed -i -e "$a\ ${USERNAME} - ${password} " "$passfile"
+		sed -i -e "$a\ ${USERNAME}: ${password} " "$passfile"
     fi
 done
 
