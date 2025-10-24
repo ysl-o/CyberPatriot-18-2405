@@ -57,7 +57,7 @@ sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 
 sudo nano "$AUTO_LOGIN" # ! DEBUG !
-RELEVANT_LINE=$(grep -n "autologin-user" "$AUTO_LOGIN" | awk -F: 'NR==2 {print $1}')
+RELEVANT_LINE=$(grep -n "autologin-user=" "$AUTO_LOGIN" | awk -F: 'NR==1 {print $1}')
 sudo sed -i \
 -e "${RELEVANT_LINE}d" \
 -e '$a\allow_guest=false' \
