@@ -4,6 +4,7 @@
 declare -a all_users=()
 declare -a all_admins=()
 
+CURR_USER=$(logname)
 USERS_ID=$(getent group "users" | cut -d: -f3)
 
 mapfile -t all_users < "$1"
@@ -44,7 +45,7 @@ fi
 echo ""
 echo "Adding nonexistent accounts..."
 for USERNAME in "${all_users[@]}"; do
-    if ! id "$USERNAME" >/dev/null 2>&1; then
+    if ! id "$USERNAME" >/dev/null 2>&1 && [[ $USERNAME != $CURR_USER ]]; then
         sudo adduser --disabled-password --gid "$USERS_ID" --gecos "" "$USERNAME"
         echo " - Added user ${USERNAME}"
     fi
@@ -80,8 +81,10 @@ done
 echo ""
 echo "Adding administrator privileges to administrator accounts..."
 for USERNAME in "${all_admins[@]}"; do
-    sudo usermod -aG sudo "$USERNAME"
-    echo " - Gave admin to ${USERNAME}"
+	if [[ $USERNAME != $CURR_USER ]]; then
+	    sudo usermod -aG sudo "$USERNAME"
+	    echo " - Gave admin to ${USERNAME}"
+	fi
 done
 
 echo ""
@@ -96,7 +99,7 @@ done
 for USERNAME in "${reg_admins[@]}"; do
 	found=0
 	for AUTHORIZED in "${all_admins[@]}"; do
-		if [[ $USERNAME == $USER ]]; then
+		if [[ $USERNAME == $CURR_USER ]]; then
 	    	continue
 	  	fi
 		if [[ $AUTHORIZED == $USERNAME ]]; then
@@ -116,7 +119,7 @@ echo "Changing passwords for each account..."
 passfile="passwords.txt"
 touch $passfile
 for USERNAME in "${all_users[@]}"; do
-    if [[ "$USERNAME" != "$USER" ]]; then
+    if [[ $USERNAME != $CURR_USER ]]; then
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
