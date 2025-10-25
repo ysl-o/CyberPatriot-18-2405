@@ -61,7 +61,7 @@ while IFS=: read -r username _ uid _ _ _ _; do
 done < /etc/passwd
 
 for USERNAME in "${reg_users[@]}"; do
-  	if [[ $USERNAME == $USER ]]; then
+  	if [[ $USERNAME == $CURR_USER ]]; then
     	continue
   	fi
   	found=0
