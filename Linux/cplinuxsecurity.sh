@@ -226,7 +226,7 @@ echo ""
 echo "----"
 echo ""
 echo "Removing hacking tools and clients..."
-HACKS=("dnsrecon" "dnsenum" "proxychains" "tor" "nmap" "slowloris" "zphisher" "nikto" "openvas" "metasploit" "sqlmap" "searchsploit" "hydra" "john" "john-the-ripper" "hashcat" "aircrack-ng" "wifite" "burp" "owasp" "dirb" "gobuster" "empire", "mimikatz" "netcat" "ncat" "lynis" "wireshark")
+HACKS=("dnsrecon" "dnsenum" "proxychains" "tor" "nmap" "slowloris" "zphisher" "nikto" "openvas" "metasploit" "sqlmap" "searchsploit" "hydra" "john" "john-the-ripper" "hashcat" "aircrack-ng" "wifite" "burp" "owasp" "dirb" "gobuster" "empire" "mimikatz" "netcat" "ncat" "lynis" "wireshark")
 for HACK in "${HACKS[@]}"; do
     if ! [[ " ${NECESSARY_PROGRAMS[*]} " =~ " ${HACK} " ]]; then
         HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
@@ -237,26 +237,6 @@ for HACK in "${HACKS[@]}"; do
         done
     fi
 done
-
-echo ""
-echo "----"
-echo ""
-echo "Updating systemd..."
-sudo apt install build-essential devscripts build-dep systemd -y
-mkdir systemd
-cd systemd/
-wget http://www.freedesktop.org/software/systemd/systemd-220.tar.xz
-wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_219-7ubuntu3.dsc
-wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_219.orig.tar.xz
-wget http://archive.ubuntu.com/ubuntu/pool/main/s/systemd/systemd_219-7ubuntu3.debian.tar.xz
-tar xvJf systemd_219.orig.tar.xz 
-cd systemd-219/
-tar xvJf ../systemd_219-7ubuntu3.debian.tar.xz
-uupdate ../systemd-220.tar.xz 220
-cd ../systemd-220
-dpkg-buildpackage -us -uc
-cd ..
-sudo dpkg -i *.deb
 
 echo ""
 echo "----"
