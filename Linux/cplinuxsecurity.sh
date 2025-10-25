@@ -65,7 +65,7 @@ for USERNAME in "${reg_users[@]}"; do
 	found=0
 	for authorized in "${all_users[@]}"; do
 		if [[ authorized == USERNAME ]]; then found=1 fi
-	end
+	done
 	if (( found == 0 )); then
 		sudo deluser --remove-home "$USERNAME"
         echo " - Deleted user ${USERNAME}"
@@ -94,7 +94,7 @@ for USERNAME in "${reg_admins[@]}"; do
 	found=0
 	for authorized in "${all_admins[@]}"; do
 		if [[ authorized == USERNAME ]]; then found=1 fi
-	end
+	done
 	if (( found == 0 )); then
 		sudo deluser -d "$USERNAME" sudo
         echo " - Removed admin from ${USERNAME}"
