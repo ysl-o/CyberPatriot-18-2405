@@ -130,14 +130,13 @@ done
 echo ""
 echo "----"
 echo "Updating packages..."
-sudo apt update -y && sudo apt full-upgrade -y && sudo apt-get update -y && sudo apt-get dist-upgrade -y
+sudo apt update -y && sudo apt full-upgrade -y && sudo apt dist-upgrade -y
 echo ""
 echo "----"
 echo ""
 echo "Installing SSH, cracklib, unattended upgrade dependencies for modifications..."
-sudo apt install openssh-server -y
-sudo apt-get install libpam-cracklib -y
-sudo apt install unattended-upgrades -y
+sudo apt install -y openssh-server libpam-cracklib apt-utils unattended-upgrades
+sudo dpkg-reconfigure -plow unattended-upgrades
 
 mapfile -t NECESSARY_PROGRAMS < "$1"
 RELEVANT_LINE=0
@@ -167,7 +166,17 @@ sudo apt install ufw -y
 sudo ufw disable
 sudo ufw enable
 
-sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e 's/.*net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter=1/' -e 's/.*net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter=1/' -e 's/.*net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects=1/' -e 's/.*net.ipv6.conf.all.accept_redirects.*/net.ipv6.conf.all.accept_redirects=0/' -e 's/.*net.ipv4.conf.all.send_redirects.*/net.ipv4.conf.all.send_redirects=0/' -e 's/.*net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route=0/' -e 's/.*net.ipv6.conf.all.accept_source_route.*/net.ipv6.conf.all.accept_source_route=0/' -e 's/.*net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians=1/' -e 's/.*kernel.sysrq.*/kernel.sysrq=0/' "$SYSCTL_CONFIG"
+sudo sed -i -e 's/.*net.ipv4.tcp_syncookies.*/net.ipv4.tcp_syncookies=1/' -e \
+'s/.*net.ipv4.conf.default.rp_filter.*/net.ipv4.conf.default.rp_filter=1/' \
+-e 's/.*net.ipv4.conf.all.rp_filter.*/net.ipv4.conf.all.rp_filter=1/' \
+-e 's/.*net.ipv4.conf.all.secure_redirects.*/net.ipv4.conf.all.secure_redirects=1/' \
+-e 's/.*net.ipv6.conf.all.accept_redirects.*/net.ipv6.conf.all.accept_redirects=0/' \
+-e 's/.*net.ipv4.conf.all.send_redirects.*/net.ipv4.conf.all.send_redirects=0/' \
+-e 's/.*net.ipv4.conf.all.accept_source_route.*/net.ipv4.conf.all.accept_source_route=0/' \
+-e 's/.*net.ipv6.conf.all.accept_source_route.*/net.ipv6.conf.all.accept_source_route=0/' \
+-e 's/.*net.ipv4.conf.all.log_martians.*/net.ipv4.conf.all.log_martians=1/' \
+-e 's/.*kernel.sysrq.*/kernel.sysrq=0/' \
+"$SYSCTL_CONFIG"
 echo "Enabled TCP SYN cookie protection to prevent denial of service (DOS)"
 
 echo ""
@@ -231,7 +240,7 @@ for HACK in "${HACKS[@]}"; do
     if ! [[ " ${NECESSARY_PROGRAMS[*]} " =~ " ${HACK} " ]]; then
         HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
         while ! [ -z "$HACK" ]; do
-            sudo apt-get purge "$HACK" -y
+            sudo apt purge "$HACK" -y
             echo " - Removed suspicious program {$HACK}"
             HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
         done
@@ -242,8 +251,7 @@ echo ""
 echo "----"
 echo ""
 echo "Updating systemd..."
-sudo apt-get install build-essential devscripts -y
-sudo apt-get build-dep systemd -y
+sudo apt install build-essential devscripts build-dep systemd -y
 mkdir systemd
 cd systemd/
 wget http://www.freedesktop.org/software/systemd/systemd-220.tar.xz
