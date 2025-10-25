@@ -149,7 +149,7 @@ PAM_COMMON_PASS="/etc/pam.d/common-password" # Not working
 PERIODIC="/etc/apt/apt.conf.d/10periodic" # Not working
 
 # UBUNTU-BASED (EX. MINT) ONLY
-AUTO_LOGIN="/etc/lightdm/lightdm.conf" # Not working
+AUTO_LOGIN="/etc/lightdm/lightdm.conf"
 
 alias sed='sed -E'
 source ~/.bashrc
@@ -185,20 +185,21 @@ RELEVANT_LINE=$(grep -n "PermitRootLogin" "$SSH_PERM_FILE" | awk -F: 'NR==1 {pri
 sudo sed -i -e "${RELEVANT_LINE}c\\PermitRootLogin no" "$SSH_PERM_FILE"
 echo "Removed ability to login to SSH using the root"
 
-sudo nano "$AUTO_LOGIN" # ! DEBUG !
 RELEVANT_LINE=$(grep -n "autologin-user=" "$AUTO_LOGIN" | awk -F: 'NR==1 {print $1}')
 sudo sed -i \
 -e "${RELEVANT_LINE}d" \
--e '$a\allow_guest=false' \
+-e '$a\allow-guest=false' \
 "$AUTO_LOGIN"
+sudo systemctl restart lightdm
 echo "Removed automatic login and guest account"
-sudo nano "$AUTO_LOGIN" # ! DEBUG !
 
+sudo nano "$PERIODIC" # ! DEBUG !
 sudo touch "$PERIODIC"
 sudo sed -i -e '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
 echo "Set automatic package updating"
 sudo nano "$PERIODIC" # ! DEBUG !
 
+sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 sed -i \
 -e "pam_unix.so/s/$/ remember=10/" \
 -e "pam_cracklib.so/s/$/ minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1/" \
