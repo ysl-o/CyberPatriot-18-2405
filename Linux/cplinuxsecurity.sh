@@ -97,11 +97,11 @@ for user in "${reg_users[@]}"; do
 done
 
 for USERNAME in "${reg_admins[@]}"; do
+	if [[ $USERNAME == $CURR_USER ]]; then
+    	continue
+  	fi
 	found=0
 	for AUTHORIZED in "${all_admins[@]}"; do
-		if [[ $USERNAME == $CURR_USER ]]; then
-	    	continue
-	  	fi
 		if [[ $AUTHORIZED == $USERNAME ]]; then
 			found=1
 			break
