@@ -145,7 +145,6 @@ SYSCTL_CONFIG="/etc/sysctl.conf"
 PASS_POLICY_FILE="/etc/login.defs"
 SSH_PERM_FILE="/etc/ssh/sshd_config"
 PAM_COMMON_PASS="/etc/pam.d/common-password"
-PERIODIC="/etc/apt/apt.conf.d/10periodic" # Not working
 
 # UBUNTU-BASED (EX. MINT) ONLY
 AUTO_LOGIN="/etc/lightdm/lightdm.conf"
@@ -201,19 +200,11 @@ sudo sed -i \
 "$AUTO_LOGIN"
 echo "Removed automatic login and guest account"
 
-sudo nano "$PERIODIC" # ! DEBUG !
-sudo touch "$PERIODIC"
-sudo sed -i -e '$a\APT::Periodic::Update-Package-Lists "1"' "$PERIODIC"
-echo "Set automatic package updating"
-sudo nano "$PERIODIC" # ! DEBUG !
-
-sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 sed -i \
 -e "/pam_unix.so/s/$/ remember=10/" \
 -e "s/.*pam_cracklib.so.*/password requisite pam_cracklib.so retry=3 difok=3 minlen=14 ucredit=1 lcredit=1 dcredit=1 ocredit=1/" \
 "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
-sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 
 echo ""
 echo "----"
@@ -267,7 +258,6 @@ dpkg-buildpackage -us -uc
 cd ..
 sudo dpkg -i *.deb
 
-# Run last; may not work
 echo ""
 echo "----"
 echo ""
@@ -279,5 +269,5 @@ sudo clamscan -i -r --remove=yes /
 echo ""
 echo "----"
 echo ""
-echo "	Execute \"sudo systemctl restart lightdm\" to restart guest autologin settings, which will likely be necessary for your points to update. You will need to remember your password for this."
-echo "	It is highly recommended that you reboot the operating system at this point."
+echo "  Execute \"sudo systemctl restart lightdm\" to restart guest autologin settings, which will likely be necessary for your points to update. You will need to remember your password for this."
+echo "  It is highly recommended that you reboot the operating system at this point."
