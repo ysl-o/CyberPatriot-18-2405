@@ -61,18 +61,21 @@ while IFS=: read -r username _ uid _ _ _ _; do
 done < /etc/passwd
 
 for USERNAME in "${reg_users[@]}"; do
-	if [[ "$USERNAME" == "$USER" ]]; then
-		continue
-	fi
-	found=0
-	for authorized in "${all_users[@]}"; do
-		if [[ "$authorized" == "$USERNAME" ]]; then
+  	if [[ $USERNAME == $USER ]]; then
+    	continue
+  	fi
+
+  	found=0
+  	for authorized in "${all_users[@]}"; do
+   		if [[ $authorized == $USERNAME ]]; then
 			found=1
-		fi
+    		break
+    	fi
 	done
-	if [ "$found" -eq 0 ]; then
+
+	if [ $found -eq 0 ]; then
 		sudo deluser --remove-home "$USERNAME"
-        echo " - Deleted user ${USERNAME}"
+    	echo "- Deleted user ${USERNAME}"
 	fi
 done
 
