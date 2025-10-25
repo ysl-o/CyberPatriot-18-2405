@@ -120,7 +120,7 @@ passfile="passwords.txt"
 touch $passfile
 for USERNAME in "${all_users[@]}"; do
     if [[ $USERNAME != $CURR_USER ]]; then
-	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
+	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 20)
 	    sudo usermod --password "$password" "$USERNAME"
         echo "User ${USERNAME} has new password \"${password}\""
 		printf "%s: %s\n" "${USERNAME}" "${password}" >> "$passfile"
@@ -145,7 +145,7 @@ RELEVANT_LINE=0
 SYSCTL_CONFIG="/etc/sysctl.conf"
 PASS_POLICY_FILE="/etc/login.defs"
 SSH_PERM_FILE="/etc/ssh/sshd_config"
-PAM_COMMON_PASS="/etc/pam.d/common-password" # Not working
+PAM_COMMON_PASS="/etc/pam.d/common-password"
 PERIODIC="/etc/apt/apt.conf.d/10periodic" # Not working
 
 # UBUNTU-BASED (EX. MINT) ONLY
@@ -201,8 +201,8 @@ sudo nano "$PERIODIC" # ! DEBUG !
 
 sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
 sed -i \
--e "pam_unix.so/s/$/ remember=10/" \
--e "pam_cracklib.so/s/$/ minlen=14 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1/" \
+-e "/pam_unix.so/s/$/ remember=10/" \
+-e "s/.*pam_cracklib.so.*/password requisite pam_cracklib.so retry=3 difok=3 minlen=14 ucredit=1 lcredit=1 dcredit=1 ocredit=1/" \
 "$PAM_COMMON_PASS"
 echo "Set minimum password policies with all security requirements"
 sudo nano "$PAM_COMMON_PASS" # ! DEBUG !
