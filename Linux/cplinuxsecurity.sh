@@ -190,7 +190,6 @@ sudo sed -i \
 -e "${RELEVANT_LINE}d" \
 -e '$a\allow-guest=false' \
 "$AUTO_LOGIN"
-sudo systemctl restart lightdm
 echo "Removed automatic login and guest account"
 
 sudo nano "$PERIODIC" # ! DEBUG !
@@ -272,4 +271,5 @@ sudo clamscan -i -r --remove=yes /
 echo ""
 echo "----"
 echo ""
-echo "It is highly recommended that you reboot at this point."
+echo "	Execute \"sudo systemctl restart lightdm\" to restart guest autologin settings, which will likely be necessary for your points to update. You will need to remember your password for this."
+echo "	It is highly recommended that you reboot the operating system at this point."
