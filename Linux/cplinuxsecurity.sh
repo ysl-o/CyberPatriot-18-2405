@@ -4,7 +4,6 @@
 declare -a all_users=()
 declare -a all_admins=()
 
-USER=$(whoami)
 USERS_ID=$(getent group "users" | cut -d: -f3)
 
 mapfile -t all_users < "$1"
@@ -64,28 +63,25 @@ for USERNAME in "${reg_users[@]}"; do
   	if [[ $USERNAME == $USER ]]; then
     	continue
   	fi
-
   	found=0
-  	for authorized in "${all_users[@]}"; do
-   		if [[ $authorized == $USERNAME ]]; then
+  	for AUTHORIZED in "${all_users[@]}"; do
+   		if [[ $AUTHORIZED == $USERNAME ]]; then
 			found=1
     		break
     	fi
 	done
-
 	if [ $found -eq 0 ]; then
 		sudo deluser --remove-home "$USERNAME"
     	echo "- Deleted user ${USERNAME}"
 	fi
+	
 done
 
 echo ""
 echo "Adding administrator privileges to administrator accounts..."
 for USERNAME in "${all_admins[@]}"; do
-	if [[ "$USERNAME" != "$USER" ]]; then
-    	sudo usermod -aG sudo "$USERNAME"
-    	echo " - Gave admin to ${USERNAME}"
-	fi
+    sudo usermod -aG sudo "$USERNAME"
+    echo " - Gave admin to ${USERNAME}"
 done
 
 echo ""
@@ -96,13 +92,19 @@ for user in "${reg_users[@]}"; do
     	reg_admins+=("$user")
     fi
 done
+
 for USERNAME in "${reg_admins[@]}"; do
-	if [[ "$USERNAME" == "$USER" ]]; then continue fi
 	found=0
-	for authorized in "${all_admins[@]}"; do
-		if [[ authorized == USERNAME ]]; then found=1 fi
+	for AUTHORIZED in "${all_admins[@]}"; do
+		if [[ $USERNAME == $USER ]]; then
+	    	continue
+	  	fi
+		if [[ $AUTHORIZED == $USERNAME ]]; then
+			found=1
+			break
+		fi
 	done
-	if (( found == 0 )); then
+	if [ $found -eq 0 ]; then
 		sudo deluser -d "$USERNAME" sudo
         echo " - Removed admin from ${USERNAME}"
 	fi
@@ -112,7 +114,7 @@ done
 echo ""
 echo "Changing passwords for each account..."
 passfile="passwords.txt"
-touch "$passfile"
+touch $passfile
 for USERNAME in "${all_users[@]}"; do
     if [[ "$USERNAME" != "$USER" ]]; then
 	    declare password=$(tr -dc 'A-Za-z0-9!@#$%^&*()' < /dev/urandom | head -c 12)
