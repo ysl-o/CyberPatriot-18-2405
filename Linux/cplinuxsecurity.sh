@@ -61,10 +61,15 @@ while IFS=: read -r username _ uid _ _ _ _; do
 done < /etc/passwd
 
 for USERNAME in "${reg_users[@]}"; do
-    if [[ ! " ${all_users[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" != "$USER" ]]; then
-        sudo deluser --remove-home "$USERNAME"
+	if [[ "$USERNAME" == "$USER" ]]; then continue fi
+	found=0
+	for authorized in "${all_users[@]}"; do
+		if [[ authorized == USERNAME ]]; then found=1 fi
+	end
+	if (( found == 0 )); then
+		sudo deluser --remove-home "$USERNAME"
         echo " - Deleted user ${USERNAME}"
-    fi
+	fi
 done
 
 echo ""
@@ -85,10 +90,15 @@ for user in "${reg_users[@]}"; do
     fi
 done
 for USERNAME in "${reg_admins[@]}"; do
-    if [[ ! " ${admins[*]} " =~ [[:space:]]${USERNAME}[[:space:]] ]] && [[ "$USERNAME" != "$USER" ]]; then
-        sudo deluser -d "$USERNAME" sudo
+	if [[ "$USERNAME" == "$USER" ]]; then continue fi
+	found=0
+	for authorized in "${all_admins[@]}"; do
+		if [[ authorized == USERNAME ]]; then found=1 fi
+	end
+	if (( found == 0 )); then
+		sudo deluser -d "$USERNAME" sudo
         echo " - Removed admin from ${USERNAME}"
-    fi
+	fi
 done
 
 
@@ -106,7 +116,7 @@ for USERNAME in "${all_users[@]}"; do
 done
 
 echo ""
-
+echo "----"
 echo "Updating packages..."
 sudo apt update -y && sudo apt full-upgrade -y && sudo apt-get update -y && sudo apt-get dist-upgrade -y
 echo ""
