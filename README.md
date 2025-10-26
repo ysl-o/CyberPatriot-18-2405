@@ -19,15 +19,15 @@
   <ul>
     <li>Ubuntu 22</li>
     <ul>
-      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxsecurity.sh">Security</a></li>
     </ul>
     <li>Ubuntu 24</li>
     <ul>
-      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxsecurity.sh">Security</a></li>
     </ul>
     <li>Mint 21</li>
     <ul>
-      <li><a href="Linux/cplinuxusers.sh">Users</a></li>
+      <li><a href="Linux/cplinuxsecurity.sh">Security</a></li>
     </ul>
   </ul>
 </ul>
@@ -35,10 +35,10 @@
 <h2>Guide by File</h2>
 <p>Each program file in the repository (meaning excluding this one and PDFs/pictures) is documented below by alphanumeric order.</p>
 
-<h3><a href="Linux/cplinuxusers.sh">cplinuxusers.sh</a></h3>
+<h3><a href="Linux/cplinuxsecurity.sh">cplinuxusers.sh</a></h3>
 <p><i>Works for: Ubuntu 22, Ubuntu 24, Mint 21</i></p>
 <br>
-<p>This file is a Shell script which automates the creation, removal, privilege allocation, and password usage of a list of users and administrators. This is useful for the section of the competition where accounts are listed in the README. To use the script, follow the instructions below:</p>
+<p>This file is a Shell script which automates the creation, removal, privilege allocation, and password usage of a list of users and administrators. This is useful for the section of the competition where accounts are listed in the README. Additionally, it implements several basic security configurations. Overall, it should award around 20 points when run early in the competition. To use the script, follow the instructions below:</p>
 <ol>
   <li>Download the file onto any folder you can access and remain in that directory.</li>
   <li>Create a new text file while in the same directory as the downloaded Shell file with the following command if you're using the terminal or by making a blank text file if you're using the GUI:
@@ -55,15 +55,22 @@
   ```
   </li>
   <li>Create or copy a list containing all <i>privileged administrators</i>, separated by a newline, with no additional spaces, marks, or symbols.</li>
+  <li>(Optional) Create a third text file while in the same directory using the terminal (below) or GUI:
+  
+  ```shell
+  sudo nano programs.txt
+  ```
+  </li>
+  <li>Create or copy a list containing all programs that may be flagged as malicious or hacking tools but are actually legitimate or required, separated by a newline, with no additional spaces, marks, or symbols.</li>
   <li>Run the following in the terminal. If all the information presented looks correct, type "Y" when prompted and enter your sudo password if prompted.
 
   ```shell
   chmod +x cplinuxusers.sh
-  ./cplinuxusers.sh users.txt admins.txt
+  ./cplinuxusers.sh users.txt admins.txt programs.txt
   ```
   </li>
 </ol>
-<p><b>Note:</b> Do not be afraid that the program will erase the current or root user; I specifically programmed it not to do that. Also, if you need to refer to it again, write down the passwords it spits out for each account. If you forget, you can probably either look it up in the system anyway or run the program again, which will randomize and print the passwords to you again without making any changes to the user structure.</p>
+<p><b>Note:</b> Do not be afraid that the program will erase the current or root user; I specifically programmed it not to do that. Also, if you need to refer to it again, the passwords will be saved in a plaintext file in the same directory, which at some point you may wish to remove for security reasons. If you forget, you can probably either look it up in the system anyway or run the program again, which will randomize and print the passwords to you again without making any changes to the user structure.</p>
 
 <h3><a href="Windows/script.ps1">script.ps1</a></h3>
 <p><i>Works for: Windows 10, Windows 11, Windows Server 2019, Windows Server 2022</i></p>
