@@ -35,7 +35,7 @@
 <h2>Guide by File</h2>
 <p>Each program file in the repository (meaning excluding this one and PDFs/pictures) is documented below by alphanumeric order.</p>
 
-<h3><a href="Linux/cplinuxsecurity.sh">cplinuxusers.sh</a></h3>
+<h3><a href="Linux/cplinuxsecurity.sh">cplinuxsecurity.sh</a></h3>
 <p><i>Works for: Ubuntu 22, Ubuntu 24, Mint 21</i></p>
 <br>
 <p>This file is a Shell script which automates the creation, removal, privilege allocation, and password usage of a list of users and administrators. This is useful for the section of the competition where accounts are listed in the README. Additionally, it implements several basic security configurations. Overall, it should award around 20 points when run early in the competition. To use the script, follow the instructions below:</p>
