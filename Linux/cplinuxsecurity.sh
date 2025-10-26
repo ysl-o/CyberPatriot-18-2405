@@ -14,8 +14,9 @@ all_users+=("${all_admins[@]}")
 
 echo "Before you begin, confirm your inputs are correctly formatted."
 echo "Both files are text files containing usernames delimited by new lines. Ensure you have no extraneous spaces, newlines, etc."
-echo "Your first input should be the path of the text file containing the usernames of all intended nonprivileged users NOT INCLUDING admins."
-echo "Your second input should be the path of the text file containing the usernames of all intended admins."
+echo "[MANDATORY]: Your first input should be the path of the text file containing the usernames of all intended nonprivileged users NOT INCLUDING admins."
+echo "[MANDATORY]: Your second input should be the path of the text file containing the usernames of all intended admins."
+echo "[OPTIONAL]: Your third input should be the Linux name of any programs that may be flagged as malicious but are necessary for operation."
 echo ""
 echo "The program will now add, delete, and change the passwords of users accordingly."
 echo "-------"
@@ -23,14 +24,21 @@ output=""
 for element in "${all_users[@]}"; do
     output+="${element}, "
 done
-echo "List of all users, regardless of privilege:"
+echo "List of all intended users, regardless of privilege:"
 echo "${output%, }"
 echo ""
 output=""
 for element in "${all_admins[@]}"; do
     output+="${element}, "
 done
-echo "List of all admins (sudoers):"
+echo "List of all intended admins (sudoers):"
+echo "${output%, }"
+echo ""
+output=""
+for element in "${NECESSARY_PROGRAMS[@]}"; do
+    output+="${element}, "
+done
+echo "List of all necessary programs which may otherwise be flagged as malicious:"
 echo "${output%, }"
 echo "-------"
 echo "Confirm for a final time that everything is correct."
