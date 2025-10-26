@@ -9,6 +9,7 @@ USERS_ID=$(getent group "users" | cut -d: -f3)
 
 mapfile -t all_users < "$1"
 mapfile -t all_admins < "$2"
+mapfile -t NECESSARY_PROGRAMS < "$3"
 all_users+=("${all_admins[@]}")
 
 echo "Before you begin, confirm your inputs are correctly formatted."
@@ -183,8 +184,8 @@ echo "----"
 echo ""
 RELEVANT_LINE=$(grep -n "PASS_MAX_DAYS" "$PASS_POLICY_FILE" | awk -F: 'NR==2 {print $1}')
 sudo sed -i \
--e "${RELEVANT_LINE}c\\PASS_MAX_DAYS_LINE 30" \
--e "$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS_LINE 1" \
+-e "${RELEVANT_LINE}c\\PASS_MAX_DAYS 30" \
+-e "$((RELEVANT_LINE + 1))c\\PASS_MIN_DAYS 1" \
 -e "$((RELEVANT_LINE + 2))c\\PASS_WARN_AGE 10" \
 "$PASS_POLICY_FILE"
 echo "Modified password time policy"
@@ -228,7 +229,14 @@ echo ""
 echo "Removing hacking tools and clients..."
 HACKS=("dnsrecon" "dnsenum" "proxychains" "tor" "nmap" "slowloris" "zphisher" "nikto" "openvas" "metasploit" "sqlmap" "searchsploit" "hydra" "john" "john-the-ripper" "hashcat" "aircrack-ng" "wifite" "burp" "owasp" "dirb" "gobuster" "empire" "mimikatz" "netcat" "ncat" "lynis" "wireshark")
 for HACK in "${HACKS[@]}"; do
-    if ! [[ " ${NECESSARY_PROGRAMS[*]} " =~ " ${HACK} " ]]; then
+	legit=0
+	for PROGRAM in "${NECESSARY_PROGRAMS[@]}"; do
+		if [[ $HACK == $PROGRAM ]]; then
+			legit=1
+			break
+		fi
+	done
+    if [ $legit -eq 0 ]; then
         HACK=$(sudo dpkg --get-selections | grep "$HACK" | head -n 1 | awk '{print $1}')
         while ! [ -z "$HACK" ]; do
             sudo apt purge "$HACK" -y
